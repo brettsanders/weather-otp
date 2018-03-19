@@ -20,6 +20,10 @@ defmodule WeatherOtp.Worker do
     GenServer.cast(pid, :reset_stats)
   end
 
+  def stop(pid) do
+    GenServer.cast(pid, :stop)
+  end
+
   ## - - - - - - - - - - - - - - - - - - - - - - -
   ## Server Callbacks
   def init(:ok) do
@@ -43,6 +47,23 @@ defmodule WeatherOtp.Worker do
 
   def handle_cast(:reset_stats, _stats) do
     {:noreply, %{}}
+  end
+
+  def handle_cast(:stop, stats) do
+    {:stop, :normal, stats}
+  end
+
+  def terminate(reason, stats) do
+    # Could write to file or db here
+    IO.puts("server terminated because of #{inspect(reason)}")
+    inspect(stats)
+    :ok
+  end
+
+  # Handle Out of Band Messages (no need for Client API function)
+  def handle_info(msg, stats) do
+    IO.puts("received #{inspect(msg)}")
+    {:noreply, stats}
   end
 
   ## - - - - - - - - - - - - - - - - - - - - - - -
