@@ -1,6 +1,7 @@
 defmodule WeatherOtp.Worker do
   use GenServer
 
+  ## - - - - - - - - - - - - - - - - - - - - - - -
   ## Client API
   def start_link(opts \\ []) do
     # when start_link/3 called, invokes init/1 and waits for response
@@ -11,6 +12,11 @@ defmodule WeatherOtp.Worker do
     GenServer.call(pid, {:location, location})
   end
 
+  def get_stats(pid) do
+    GenServer.call(pid, :get_stats)
+  end
+
+  ## - - - - - - - - - - - - - - - - - - - - - - -
   ## Server Callbacks
   def init(:ok) do
     {:ok, %{}}
@@ -27,6 +33,11 @@ defmodule WeatherOtp.Worker do
     end
   end
 
+  def handle_call(:get_stats, _from, stats) do
+    {:reply, stats, stats}
+  end
+
+  ## - - - - - - - - - - - - - - - - - - - - - - -
   # Helper Functions
   defp temperature_of(location) do
     result = url_for(location) |> HTTPoison.get() |> parse_response
